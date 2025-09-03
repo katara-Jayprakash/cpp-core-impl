@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <div id="buttonParent"></div>
+    <script>
+      //state variable;
+      let state = {
+        count: 1,
+      };
+
+      //updating state variable=> object type;
+      function onButtonPress() {
+        console.log("value in onBUTTONPRESS", state.count);
+        state.count++;
+        buttonComponentReRender();
+      }
+      //component function that take value of state variable;
+      function buttonComponent(count) {
+        const myButton = document.createElement("button");
+
+        myButton.innerHTML = `counter ${count}`;
+        myButton.setAttribute("onclick", `onButtonPress()`);
+        return myButton;
+      }
+
+      function buttonComponentReRender() {
+        // in actual react code things works with virtual dom..
+        document.getElementById("buttonParent").innerHTML = "";
+        const component = buttonComponent(state.count);
+        document.getElementById("buttonParent").appendChild(component);
+      }
+      buttonComponentReRender();
+    </script>
+  </body>
+</html>
