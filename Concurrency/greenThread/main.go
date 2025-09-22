@@ -5,14 +5,15 @@
 */
 /*
 package main
-  import (
+
+import (
 	"fmt"
 	"math"
 	"strconv"
 	"sync"
 	"sync/atomic"
 	"time"
-  )
+)
 
 var MaxInt int64 = 100000000
 var totalPrimeNum int64 = 0
@@ -72,7 +73,7 @@ func main() {
 			end = int(MaxInt)
 		}
 
-		go doBatch( strconv.Itoa(i),  &wg, start, end)
+	  go  doBatch( strconv.Itoa(i),  &wg, start, end)
 	}
 
 	wg.Wait()
@@ -82,7 +83,7 @@ func main() {
 }
 */
 
-/*optimising the logic more*/
+// /*optimising the logic more
 
 package main
 
