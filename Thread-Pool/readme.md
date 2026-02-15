@@ -189,9 +189,14 @@ Task3 ──┘                               └──→ Worker 3
 
 ---
 ### How much worker thread should we included in threadPool or how should we tune thread
-from my prospective i dont think there is certain number for using this specific number of worker thread, 
-i mean its totally depends on 
- ``` what kind of task are you doing like 
-     if its i/o  bound or network related use then use more number of worker-Thread because go has special way of handling them go does not count them in blocking task
-     and if task is more cpu Intensive then use less number of worker thread because thread are going to busy maximum time
-     2. another thing is it totally depends on your computer hardware, ```
+From my prospective, 
+I dont think there is certain number for using this specific number of worker-thread, 
+   i mean its totally depends on 
+
+  1. what kind of task are you doing like 
+     if its i/o  bound or network related use then use more number of worker-Thread 
+     because go has special way of handling them go does not count them in blocking task
+     and if task is more cpu Intensive then use less number of worker thread 
+     because thread are going to busy maximum time.
+  2. another thing is it totally depends on your computer hardware,
+---
