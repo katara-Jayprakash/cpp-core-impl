@@ -1,23 +1,52 @@
 package threadpool
 
-import "fmt"
+import (
+	"fmt"
+	"io"
+	"log"
+	"net/http"
+)
 
-// i got the job from user or by client what i have to do
-var name string = "Jay prakash"
-
+/**
+ * job can be anything that client want to execute us, so we have to take job and make it function
+ */
 type jobs func() error
 
-/*  for me the job can be anything, like something that can be executable so for that i have to make it function      take parameter and return error i convert this job into function so i use my custom structure
-// and now i am using closure for making it function*/
+func worker(allQueue chan jobs) {
+	for job := range allQueue {
+		// worker have to execute this jobs now
+		job()
+	}
 
-var myJob jobs = func() error {
-	fmt.Println("Job coming from outside", name)
-	return nil
 }
-
 func main() {
-	//creating a queue which can store these all jobs
-	// i am not implementing queue data strucute since we got channel we are going to use it
+	// job implementation
+	var link string
+	fmt.Print("enter the link that you want to send request: ")
+	fmt.Scan(&link)
+
+	// channel for storing jobs which can be upto 30
 	jobsQueue := make(chan jobs, 30)
+
+	// spawn worker pool
+	workerTheadLimit := 5
+	for i := 1; i <= workerTheadLimit; i++ {
+		go worker(jobsQueue)
+	}
+	myJobs := func() error {
+		resp, err := http.Get(link)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer resp.Body.Close()
+		body, err := io.ReadAll(resp.Body)
+		// converting all this into string
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("Worker fetched %d bytes from %s\n", len(body), link)
+		return nil
+	}
+	jobsQueue <- myJobs
 
 }
