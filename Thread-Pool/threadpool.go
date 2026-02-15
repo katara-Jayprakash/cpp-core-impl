@@ -1,10 +1,11 @@
-package threadpool
+package main
 
 import (
 	"fmt"
 	"io"
 	"log"
 	"net/http"
+	"sync"
 )
 
 /**
@@ -12,12 +13,13 @@ import (
  */
 type jobs func() error
 
+var wg sync.WaitGroup
+
 func worker(allQueue chan jobs) {
 	for job := range allQueue {
 		// worker have to execute this jobs now
 		job()
 	}
-
 }
 func main() {
 	// job implementation
@@ -35,6 +37,7 @@ func main() {
 	}
 	myJobs := func() error {
 		resp, err := http.Get(link)
+		defer wg.Done() // mark job done when finished
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -47,6 +50,9 @@ func main() {
 		fmt.Printf("Worker fetched %d bytes from %s\n", len(body), link)
 		return nil
 	}
+	wg.Add(1) // increment WaitGroup before submitting job
 	jobsQueue <- myJobs
+
+	wg.Wait()
 
 }
