@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math/rand"
 	"net/http"
 	"sync"
+	"time"
 )
 
 /**
@@ -17,8 +19,10 @@ var wg sync.WaitGroup
 
 func worker(allQueue chan jobs) {
 	for job := range allQueue {
+		fmt.Println("Worker picked a job")
 		// worker have to execute this jobs now
 		job()
+		fmt.Println("Worker finish a job")
 	}
 }
 func main() {
@@ -32,12 +36,17 @@ func main() {
 
 	// spawn worker pool
 	workerTheadLimit := 5
+
 	for i := 1; i <= workerTheadLimit; i++ {
 		go worker(jobsQueue)
 	}
+
 	myJobs := func() error {
-		resp, err := http.Get(link)
 		defer wg.Done() // mark job done when finished
+		// Simulate variable job duration
+		time.Sleep(time.Duration(rand.Intn(1500)) * time.Millisecond)
+		resp, err := http.Get(link)
+
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -50,9 +59,15 @@ func main() {
 		fmt.Printf("Worker fetched %d bytes from %s\n", len(body), link)
 		return nil
 	}
-	wg.Add(1) // increment WaitGroup before submitting job
-	jobsQueue <- myJobs
+
+	// increment WaitGroup before submitting job
+	for i := 1; i <= 30; i++ {
+		wg.Add(1)
+		jobsQueue <- myJobs
+	}
 
 	wg.Wait()
+	close(jobsQueue)
+	fmt.Println("all work is done finally")
 
 }
